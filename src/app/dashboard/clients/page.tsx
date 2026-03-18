@@ -61,6 +61,9 @@ export default async function ClientsPage() {
     state: client.state ?? "",
     taxYear: client.taxYear ? String(client.taxYear) : "N/A",
     status: client.status ?? "Intake Started",
+    createdAt: client.createdAt
+      ? dateFormatter.format(client.createdAt)
+      : "\u2014",
     lastUpdated: dateFormatter.format(client.updatedAt),
   }));
 

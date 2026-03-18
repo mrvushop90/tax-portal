@@ -14,6 +14,7 @@ type ClientListItem = {
   state: string;
   taxYear: string;
   status: string;
+  createdAt: string;
   lastUpdated: string;
 };
 
@@ -122,6 +123,7 @@ export function ClientsDirectory({
               <th className="px-6 py-4">Location</th>
               <th className="px-6 py-4">Tax Year</th>
               <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Created</th>
               <th className="px-6 py-4">Last Updated</th>
               <th className="px-6 py-4 text-right sm:px-7">Actions</th>
             </tr>
@@ -159,6 +161,7 @@ export function ClientsDirectory({
                     {client.status}
                   </span>
                 </td>
+                <td className="px-6 py-4">{client.createdAt}</td>
                 <td className="px-6 py-4">{client.lastUpdated}</td>
                 <td className="px-6 py-4 text-right sm:px-7">
                   <Link
