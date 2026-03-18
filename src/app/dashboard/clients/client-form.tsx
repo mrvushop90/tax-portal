@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import type { ChangeEvent } from "react";
 import type { ReactNode } from "react";
 
 import {
@@ -124,6 +127,40 @@ function Field({
 const inputClassName =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100";
 
+function capitalizeFirstLetter(value: string) {
+  if (!value) {
+    return value;
+  }
+
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatPhoneNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+
+  if (digits.length === 0) {
+    return "";
+  }
+
+  if (digits.length <= 3) {
+    return `(${digits}`;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  }
+
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = capitalizeFirstLetter(event.currentTarget.value);
+}
+
+function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = formatPhoneNumber(event.currentTarget.value);
+}
+
 export function ClientForm({
   action,
   values,
@@ -193,6 +230,7 @@ export function ClientForm({
               required
               defaultValue={formValues.firstName}
               placeholder="Enter first name"
+              onChange={handleNameChange}
               className={inputClassName}
             />
           </Field>
@@ -209,6 +247,7 @@ export function ClientForm({
               required
               defaultValue={formValues.lastName}
               placeholder="Enter last name"
+              onChange={handleNameChange}
               className={inputClassName}
             />
           </Field>
@@ -224,6 +263,7 @@ export function ClientForm({
               type="tel"
               defaultValue={formValues.phone}
               placeholder="(555) 555-5555"
+              onChange={handlePhoneChange}
               className={inputClassName}
             />
           </Field>
@@ -337,6 +377,7 @@ export function ClientForm({
               type="text"
               defaultValue={formValues.spouseFirstName}
               placeholder="Enter spouse first name"
+              onChange={handleNameChange}
               className={inputClassName}
             />
           </Field>
@@ -352,6 +393,7 @@ export function ClientForm({
               type="text"
               defaultValue={formValues.spouseLastName}
               placeholder="Enter spouse last name"
+              onChange={handleNameChange}
               className={inputClassName}
             />
           </Field>

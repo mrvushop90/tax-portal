@@ -1,5 +1,6 @@
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
 
@@ -38,10 +39,13 @@ function DetailItem({
 
 export default async function ClientDetailPage({
   params,
+  searchParams,
 }: Readonly<{
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ confirmDelete?: string }>;
 }>) {
   const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
 
   const client = await db.client.findUnique({
     where: { id },
@@ -49,6 +53,21 @@ export default async function ClientDetailPage({
 
   if (!client) {
     notFound();
+  }
+
+  const showDeleteConfirmation =
+    resolvedSearchParams?.confirmDelete === "true";
+
+  async function deleteClient() {
+    "use server";
+
+    await db.client.deleteMany({
+      where: { id },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/clients");
+    redirect("/dashboard/clients");
   }
 
   const fullName = `${client.firstName} ${client.lastName}`.trim();
@@ -86,9 +105,60 @@ export default async function ClientDetailPage({
             >
               Edit Client
             </Link>
+            {showDeleteConfirmation ? (
+              <Link
+                href={`/dashboard/clients/${client.id}`}
+                className="inline-flex items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 focus:outline-none focus:ring-4 focus:ring-rose-100"
+              >
+                Cancel Delete
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/clients/${client.id}?confirmDelete=true`}
+                className="inline-flex items-center justify-center rounded-2xl border border-rose-200 bg-white px-5 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus:ring-4 focus:ring-rose-100"
+              >
+                Delete Client
+              </Link>
+            )}
           </div>
         </div>
       </section>
+
+      {showDeleteConfirmation ? (
+        <section className="rounded-[1.75rem] border border-rose-200 bg-[linear-gradient(135deg,#fff1f2_0%,#ffffff_100%)] p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] sm:p-7">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-700">
+                Delete Confirmation
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-slate-950">
+                Delete {fullName}?
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                This permanently removes the client record from the dashboard.
+                Use the final delete action only if you are certain.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={`/dashboard/clients/${client.id}`}
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200"
+              >
+                Keep Client
+              </Link>
+              <form action={deleteClient}>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-2xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-100"
+                >
+                  Confirm Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <article className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] backdrop-blur">
