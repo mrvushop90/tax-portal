@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { getStatusBadgeLabel, getStatusBadgeStyle } from "./status-badge";
 
 type ClientListItem = {
   id: string;
@@ -13,28 +14,10 @@ type ClientListItem = {
   city: string;
   state: string;
   taxYear: string;
-  status: string;
+  status: string | null;
   createdAt: string;
   lastUpdated: string;
 };
-
-const statusStyles: Record<string, string> = {
-  "In Progress": "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
-  "Awaiting Documents":
-    "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200",
-  "Ready to File":
-    "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
-  Filed: "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-200",
-  "Intake Started":
-    "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200",
-};
-
-function getStatusStyle(status: string) {
-  return (
-    statusStyles[status] ??
-    "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-200"
-  );
-}
 
 type SortOption = "name-asc" | "name-desc";
 
@@ -156,9 +139,9 @@ export function ClientsDirectory({
                 <td className="px-6 py-4">{client.taxYear}</td>
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(client.status)}`}
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeStyle(client.status)}`}
                   >
-                    {client.status}
+                    {getStatusBadgeLabel(client.status)}
                   </span>
                 </td>
                 <td className="px-6 py-4">{client.createdAt}</td>

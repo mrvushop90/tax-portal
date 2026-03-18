@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { formatSsn } from "../client-form-data";
+import { getStatusBadgeLabel, getStatusBadgeStyle } from "../status-badge";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -164,9 +165,13 @@ export default async function ClientDetailPage({
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <article className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] backdrop-blur">
           <p className="text-sm font-medium text-slate-500">Status</p>
-          <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">
-            {client.status ?? "Intake Started"}
-          </p>
+          <div className="mt-3">
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeStyle(client.status)}`}
+            >
+              {getStatusBadgeLabel(client.status)}
+            </span>
+          </div>
           <p className="mt-4 text-sm leading-6 text-slate-500">
             Current intake or preparation stage.
           </p>
