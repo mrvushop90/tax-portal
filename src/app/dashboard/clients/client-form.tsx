@@ -137,6 +137,14 @@ function capitalizeFirstLetter(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function trimLeadingSpaces(value: string) {
+  return value.replace(/^\s+/, "");
+}
+
+function normalizeState(value: string) {
+  return value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 2);
+}
+
 function formatPhoneNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
 
@@ -173,6 +181,14 @@ function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = capitalizeFirstLetter(event.currentTarget.value);
 }
 
+function handleCityChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = capitalizeFirstLetter(event.currentTarget.value);
+}
+
+function handleTrimLeadingSpacesChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = trimLeadingSpaces(event.currentTarget.value);
+}
+
 function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = formatPhoneNumber(event.currentTarget.value);
 }
@@ -193,6 +209,10 @@ function handleZipChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = normalizeZip(event.currentTarget.value);
 }
 
+function handleStateChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = normalizeState(event.currentTarget.value);
+}
+
 export function ClientForm({
   action,
   values,
@@ -208,6 +228,7 @@ export function ClientForm({
     ...defaultClientFormValues,
     ...values,
     ssn: formatSsn(values?.ssn ?? defaultClientFormValues.ssn),
+    state: normalizeState(values?.state ?? defaultClientFormValues.state),
     zip: normalizeZip(values?.zip ?? defaultClientFormValues.zip),
   };
 
@@ -455,13 +476,14 @@ export function ClientForm({
             >
               <input
                 id="address"
-                name="address"
-                type="text"
-                defaultValue={formValues.address}
-                placeholder="Enter street address"
-                className={inputClassName}
-              />
-            </Field>
+              name="address"
+              type="text"
+              defaultValue={formValues.address}
+              placeholder="Enter street address"
+              onChange={handleTrimLeadingSpacesChange}
+              className={inputClassName}
+            />
+          </Field>
           </div>
 
           <Field id="city" label="City">
@@ -471,23 +493,28 @@ export function ClientForm({
               type="text"
               defaultValue={formValues.city}
               placeholder="Enter city"
+              onChange={handleCityChange}
               className={inputClassName}
             />
           </Field>
 
           <Field id="state" label="State">
-            <select
+            <input
               id="state"
               name="state"
+              type="text"
               defaultValue={formValues.state}
+              placeholder="CA"
+              maxLength={2}
+              onChange={handleStateChange}
               className={inputClassName}
-            >
+              list="state-options"
+            />
+            <datalist id="state-options">
               {states.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
+                <option key={state} value={state} />
               ))}
-            </select>
+            </datalist>
           </Field>
 
           <Field id="zip" label="ZIP">
