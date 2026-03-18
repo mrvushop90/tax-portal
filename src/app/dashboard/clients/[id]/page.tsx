@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { formatSsn } from "../client-form-data";
+import { isQuickClientStatus } from "../client-status-options";
+import { QuickStatusSelect } from "../quick-status-select";
 import { getStatusBadgeLabel, getStatusBadgeStyle } from "../status-badge";
 import { db } from "@/lib/db";
 
@@ -72,10 +74,37 @@ export default async function ClientDetailPage({
     redirect("/dashboard/clients");
   }
 
+  async function updateClientStatus(formData: FormData) {
+    "use server";
+
+    const submittedStatus = formData.get("status");
+    const normalizedStatus =
+      typeof submittedStatus === "string"
+        ? submittedStatus.trim().toLowerCase()
+        : null;
+
+    if (!isQuickClientStatus(normalizedStatus)) {
+      redirect(`/dashboard/clients/${id}`);
+    }
+
+    await db.client.update({
+      where: { id },
+      data: { status: normalizedStatus },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/clients");
+    revalidatePath(`/dashboard/clients/${id}`);
+    redirect(`/dashboard/clients/${id}`);
+  }
+
   const fullName = `${client.firstName} ${client.lastName}`.trim();
   const location = [client.city, client.state, client.zip]
     .filter((value): value is string => Boolean(value))
     .join(", ");
+  const quickStatusValue = isQuickClientStatus(client.status)
+    ? client.status.trim().toLowerCase()
+    : "";
 
   return (
     <div className="space-y-6">
@@ -172,6 +201,9 @@ export default async function ClientDetailPage({
               {getStatusBadgeLabel(client.status)}
             </span>
           </div>
+          <form action={updateClientStatus} className="mt-4">
+            <QuickStatusSelect defaultValue={quickStatusValue} />
+          </form>
           <p className="mt-4 text-sm leading-6 text-slate-500">
             Current intake or preparation stage.
           </p>

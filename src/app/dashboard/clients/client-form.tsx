@@ -11,6 +11,7 @@ import {
   normalizeState,
   type ClientFormValues,
 } from "./client-form-data";
+import { quickClientStatuses } from "./client-status-options";
 
 const clientTypes = [
   "Individual",
@@ -23,6 +24,7 @@ const engagementStatuses = [
   "Awaiting Documents",
   "In Progress",
   "Ready to File",
+  ...quickClientStatuses,
 ] as const;
 
 const states = [
