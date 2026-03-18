@@ -52,6 +52,8 @@ export default async function ClientsPage() {
 
   const directoryClients = clients.map((client) => ({
     id: client.id,
+    firstName: client.firstName,
+    lastName: client.lastName,
     name: `${client.firstName} ${client.lastName}`.trim(),
     phone: client.phone ?? "N/A",
     email: client.email ?? "N/A",

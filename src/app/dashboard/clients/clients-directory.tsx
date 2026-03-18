@@ -5,6 +5,8 @@ import { useState } from "react";
 
 type ClientListItem = {
   id: string;
+  firstName: string;
+  lastName: string;
   name: string;
   phone: string;
   email: string;
@@ -43,15 +45,9 @@ export function ClientsDirectory({
   const normalized = query.trim().toLowerCase();
   const filteredClients = normalized
     ? clients.filter((client) =>
-        [
-          client.name,
-          client.phone,
-          client.email,
-          client.city,
-          client.state,
-          client.taxYear,
-          client.status,
-        ].some((value) => value.toLowerCase().includes(normalized)),
+        [client.firstName, client.lastName, client.phone, client.email].some(
+          (value) => value.toLowerCase().includes(normalized),
+        ),
       )
     : clients;
 
@@ -76,7 +72,7 @@ export function ClientsDirectory({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search by client, email, phone, location, year, or status"
+            placeholder="Search clients..."
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
           />
         </div>
@@ -150,7 +146,7 @@ export function ClientsDirectory({
             No clients match your search.
           </p>
           <p className="mt-2 text-sm text-slate-500">
-            Try a name, email, phone number, location, or tax status.
+            Try a first name, last name, email, or phone number.
           </p>
         </div>
       ) : null}
