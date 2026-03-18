@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import {
   defaultClientFormValues,
+  formatSsn,
   type ClientFormValues,
 } from "./client-form-data";
 
@@ -183,6 +184,10 @@ function handleDateOfBirthChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = formatDateOfBirth(event.currentTarget.value);
 }
 
+function handleSsnChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = formatSsn(event.currentTarget.value);
+}
+
 export function ClientForm({
   action,
   values,
@@ -197,6 +202,7 @@ export function ClientForm({
   const formValues = {
     ...defaultClientFormValues,
     ...values,
+    ssn: formatSsn(values?.ssn ?? defaultClientFormValues.ssn),
   };
 
   return (
@@ -344,6 +350,8 @@ export function ClientForm({
               inputMode="numeric"
               defaultValue={formValues.ssn}
               placeholder="XXX-XX-XXXX"
+              maxLength={11}
+              onChange={handleSsnChange}
               className={inputClassName}
             />
           </Field>

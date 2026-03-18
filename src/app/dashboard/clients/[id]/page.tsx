@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { formatSsn } from "../client-form-data";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -218,7 +219,10 @@ export default async function ClientDetailPage({
               label="Date of Birth"
               value={formatDate(client.dateOfBirth)}
             />
-            <DetailItem label="SSN" value={formatValue(client.ssn)} />
+            <DetailItem
+              label="SSN"
+              value={client.ssn ? formatSsn(client.ssn) : "Not provided"}
+            />
           </div>
         </section>
 

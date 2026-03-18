@@ -40,6 +40,24 @@ export const defaultClientFormValues: ClientFormValues = {
   engagementTaxYear: "2025",
 };
 
+export function normalizeSsn(value: string) {
+  return value.replace(/\D/g, "").slice(0, 9);
+}
+
+export function formatSsn(value: string) {
+  const digits = normalizeSsn(value);
+
+  if (digits.length <= 3) {
+    return digits;
+  }
+
+  if (digits.length <= 5) {
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  }
+
+  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+}
+
 function getFormString(formData: FormData, key: string) {
   const value = formData.get(key);
 
@@ -62,6 +80,12 @@ function getOptionalInteger(formData: FormData, key: string) {
   const parsed = Number.parseInt(value, 10);
 
   return Number.isNaN(parsed) ? null : parsed;
+}
+
+function getOptionalSsn(formData: FormData, key: string) {
+  const value = normalizeSsn(getFormString(formData, key));
+
+  return value === "" ? null : formatSsn(value);
 }
 
 function getOptionalDate(formData: FormData, key: string) {
@@ -104,7 +128,7 @@ export function getClientDataFromFormData(formData: FormData) {
     email: getOptionalString(formData, "email"),
     phone: getOptionalString(formData, "phone"),
     dateOfBirth: getOptionalDate(formData, "dateOfBirth"),
-    ssn: getOptionalString(formData, "ssn"),
+    ssn: getOptionalSsn(formData, "ssn"),
     address: getOptionalString(formData, "address"),
     city: getOptionalString(formData, "city"),
     state: getOptionalString(formData, "state"),
