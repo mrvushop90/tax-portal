@@ -9,7 +9,15 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 function toDateInputValue(value: Date | null) {
-  return value ? value.toISOString().slice(0, 10) : "";
+  if (!value) {
+    return "";
+  }
+
+  const month = String(value.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(value.getUTCDate()).padStart(2, "0");
+  const year = value.getUTCFullYear();
+
+  return `${month}/${day}/${year}`;
 }
 
 export default async function EditClientPage({

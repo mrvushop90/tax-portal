@@ -153,6 +153,20 @@ function formatPhoneNumber(value: string) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+function formatDateOfBirth(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 4) {
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  }
+
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
 function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = capitalizeFirstLetter(event.currentTarget.value);
 }
@@ -163,6 +177,10 @@ function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
 
 function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = event.currentTarget.value.toLowerCase();
+}
+
+function handleDateOfBirthChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = formatDateOfBirth(event.currentTarget.value);
 }
 
 export function ClientForm({
@@ -304,8 +322,12 @@ export function ClientForm({
             <input
               id="dateOfBirth"
               name="dateOfBirth"
-              type="date"
+              type="text"
+              inputMode="numeric"
               defaultValue={formValues.dateOfBirth}
+              placeholder="MM/DD/YYYY"
+              maxLength={10}
+              onChange={handleDateOfBirthChange}
               className={inputClassName}
             />
           </Field>

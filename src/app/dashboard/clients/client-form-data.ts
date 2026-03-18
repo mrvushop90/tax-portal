@@ -71,6 +71,24 @@ function getOptionalDate(formData: FormData, key: string) {
     return null;
   }
 
+  const mmddyyyyMatch = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+
+  if (mmddyyyyMatch) {
+    const [, month, day, year] = mmddyyyyMatch;
+    const parsed = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+
+    if (
+      !Number.isNaN(parsed.getTime()) &&
+      parsed.getUTCFullYear() === Number(year) &&
+      parsed.getUTCMonth() + 1 === Number(month) &&
+      parsed.getUTCDate() === Number(day)
+    ) {
+      return parsed;
+    }
+
+    return null;
+  }
+
   const parsed = new Date(`${value}T00:00:00.000Z`);
 
   return Number.isNaN(parsed.getTime()) ? null : parsed;
