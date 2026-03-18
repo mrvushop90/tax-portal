@@ -24,6 +24,10 @@ function formatDate(value: Date | null) {
   return value ? dateFormatter.format(value) : "Not provided";
 }
 
+function formatTimestamp(value: Date | null | undefined) {
+  return value ? dateFormatter.format(value) : "—";
+}
+
 function DetailItem({
   label,
   value,
@@ -220,7 +224,7 @@ export default async function ClientDetailPage({
         <article className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] backdrop-blur">
           <p className="text-sm font-medium text-slate-500">Created</p>
           <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">
-            {dateFormatter.format(client.createdAt)}
+            {formatTimestamp(client.createdAt)}
           </p>
           <p className="mt-4 text-sm leading-6 text-slate-500">
             Original record creation date.
@@ -229,7 +233,7 @@ export default async function ClientDetailPage({
         <article className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] backdrop-blur">
           <p className="text-sm font-medium text-slate-500">Last Updated</p>
           <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-slate-950">
-            {dateFormatter.format(client.updatedAt)}
+            {formatTimestamp(client.updatedAt)}
           </p>
           <p className="mt-4 text-sm leading-6 text-slate-500">
             Most recent database update.
