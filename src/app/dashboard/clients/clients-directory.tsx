@@ -35,12 +35,23 @@ function getStatusStyle(status: string) {
   );
 }
 
+type SortOption = "name-asc" | "name-desc";
+
+function getClientSortName(client: Pick<ClientListItem, "firstName" | "lastName">) {
+  return [client.firstName, client.lastName]
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase();
+}
+
 export function ClientsDirectory({
   clients,
 }: Readonly<{
   clients: ClientListItem[];
 }>) {
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortOption>("name-asc");
 
   const normalized = query.trim().toLowerCase();
   const filteredClients = normalized
@@ -50,6 +61,13 @@ export function ClientsDirectory({
         ),
       )
     : clients;
+  const sortedClients = [...filteredClients].sort((left, right) => {
+    const leftName = getClientSortName(left);
+    const rightName = getClientSortName(right);
+    const comparison = leftName.localeCompare(rightName);
+
+    return sort === "name-desc" ? comparison * -1 : comparison;
+  });
 
   return (
     <section className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/95 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.28)] backdrop-blur">
@@ -63,18 +81,34 @@ export function ClientsDirectory({
           </h3>
         </div>
 
-        <div className="w-full max-w-md">
-          <label htmlFor="client-search" className="sr-only">
-            Search clients
-          </label>
-          <input
-            id="client-search"
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search clients..."
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
-          />
+        <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+          <div className="flex-1">
+            <label htmlFor="client-search" className="sr-only">
+              Search clients
+            </label>
+            <input
+              id="client-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search clients..."
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            />
+          </div>
+          <div className="sm:w-40">
+            <label htmlFor="client-sort" className="sr-only">
+              Sort clients
+            </label>
+            <select
+              id="client-sort"
+              value={sort}
+              onChange={(event) => setSort(event.target.value as SortOption)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-sky-500 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            >
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -93,7 +127,7 @@ export function ClientsDirectory({
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client) => (
+            {sortedClients.map((client) => (
               <tr
                 key={client.id}
                 className="border-b border-slate-100 text-sm text-slate-700 transition hover:bg-slate-50/80"
@@ -140,7 +174,7 @@ export function ClientsDirectory({
         </table>
       </div>
 
-      {filteredClients.length === 0 ? (
+      {sortedClients.length === 0 ? (
         <div className="px-6 py-10 text-center sm:px-7">
           <p className="text-base font-semibold text-slate-900">
             No clients match your search.
