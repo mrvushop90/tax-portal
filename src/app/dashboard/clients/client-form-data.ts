@@ -58,6 +58,10 @@ export function formatSsn(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
+export function normalizeZip(value: string) {
+  return value.replace(/\D/g, "").slice(0, 5);
+}
+
 function getFormString(formData: FormData, key: string) {
   const value = formData.get(key);
 
@@ -132,7 +136,11 @@ export function getClientDataFromFormData(formData: FormData) {
     address: getOptionalString(formData, "address"),
     city: getOptionalString(formData, "city"),
     state: getOptionalString(formData, "state"),
-    zip: getOptionalString(formData, "zip"),
+    zip: (() => {
+      const value = normalizeZip(getFormString(formData, "zip"));
+
+      return value === "" ? null : value;
+    })(),
     taxYear:
       getOptionalInteger(formData, "engagementTaxYear") ??
       getOptionalInteger(formData, "taxYear"),

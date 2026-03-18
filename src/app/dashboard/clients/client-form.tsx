@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import {
   defaultClientFormValues,
+  normalizeZip,
   formatSsn,
   type ClientFormValues,
 } from "./client-form-data";
@@ -188,6 +189,10 @@ function handleSsnChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = formatSsn(event.currentTarget.value);
 }
 
+function handleZipChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = normalizeZip(event.currentTarget.value);
+}
+
 export function ClientForm({
   action,
   values,
@@ -203,6 +208,7 @@ export function ClientForm({
     ...defaultClientFormValues,
     ...values,
     ssn: formatSsn(values?.ssn ?? defaultClientFormValues.ssn),
+    zip: normalizeZip(values?.zip ?? defaultClientFormValues.zip),
   };
 
   return (
@@ -492,6 +498,8 @@ export function ClientForm({
               inputMode="numeric"
               defaultValue={formValues.zip}
               placeholder="Enter ZIP"
+              maxLength={5}
+              onChange={handleZipChange}
               className={inputClassName}
             />
           </Field>
