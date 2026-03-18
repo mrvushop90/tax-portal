@@ -161,6 +161,10 @@ function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
   event.currentTarget.value = formatPhoneNumber(event.currentTarget.value);
 }
 
+function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
+  event.currentTarget.value = event.currentTarget.value.toLowerCase();
+}
+
 export function ClientForm({
   action,
   values,
@@ -279,6 +283,7 @@ export function ClientForm({
               type="email"
               defaultValue={formValues.email}
               placeholder="name@client.com"
+              onChange={handleEmailChange}
               className={inputClassName}
             />
           </Field>
