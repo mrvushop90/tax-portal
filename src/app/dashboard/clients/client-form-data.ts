@@ -62,6 +62,10 @@ export function normalizeZip(value: string) {
   return value.replace(/\D/g, "").slice(0, 5);
 }
 
+export function normalizeState(value: string) {
+  return value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 2);
+}
+
 function getFormString(formData: FormData, key: string) {
   const value = formData.get(key);
 
@@ -125,6 +129,7 @@ function getOptionalDate(formData: FormData, key: string) {
 export function getClientDataFromFormData(formData: FormData) {
   const firstName = getFormString(formData, "firstName");
   const lastName = getFormString(formData, "lastName");
+  const state = normalizeState(getFormString(formData, "state"));
 
   return {
     firstName,
@@ -135,7 +140,7 @@ export function getClientDataFromFormData(formData: FormData) {
     ssn: getOptionalSsn(formData, "ssn"),
     address: getOptionalString(formData, "address"),
     city: getOptionalString(formData, "city"),
-    state: getOptionalString(formData, "state"),
+    state: state === "" ? null : state,
     zip: (() => {
       const value = normalizeZip(getFormString(formData, "zip"));
 

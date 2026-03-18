@@ -8,6 +8,7 @@ import {
   defaultClientFormValues,
   normalizeZip,
   formatSsn,
+  normalizeState,
   type ClientFormValues,
 } from "./client-form-data";
 
@@ -139,10 +140,6 @@ function capitalizeFirstLetter(value: string) {
 
 function trimLeadingSpaces(value: string) {
   return value.replace(/^\s+/, "");
-}
-
-function normalizeState(value: string) {
-  return value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 2);
 }
 
 function formatPhoneNumber(value: string) {
@@ -476,14 +473,14 @@ export function ClientForm({
             >
               <input
                 id="address"
-              name="address"
-              type="text"
-              defaultValue={formValues.address}
-              placeholder="Enter street address"
-              onChange={handleTrimLeadingSpacesChange}
-              className={inputClassName}
-            />
-          </Field>
+                name="address"
+                type="text"
+                defaultValue={formValues.address}
+                placeholder="Enter street address"
+                onChange={handleTrimLeadingSpacesChange}
+                className={inputClassName}
+              />
+            </Field>
           </div>
 
           <Field id="city" label="City">
